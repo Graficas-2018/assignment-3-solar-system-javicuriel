@@ -178,6 +178,37 @@ function run() {
     animate();
 }
 
+function load_asteroids(sun_placer) {
+  // instantiate a loader
+  var loader = new THREE.OBJLoader();
+
+  // load a resource
+  loader.load('images/asteroid.obj',function (object) {
+      asteroids = new THREE.Object3D;
+      texture = new THREE.TextureLoader().load("images/astroid_texture.jpg");
+      material = new THREE.MeshPhongMaterial({ map: texture});
+      geometry = object.children[0].geometry
+      element = new THREE.Mesh(geometry, material);
+      for ( var i = 0; i < 1500; i ++ ) {
+        var asteroid = element.clone()
+        var theta = THREE.Math.randFloatSpread(360);
+        var phi = THREE.Math.randFloatSpread(360);
+
+        var r = 225
+        sizex = Math.abs(THREE.Math.randFloatSpread(.1))
+
+        asteroid.scale.set(sizex,sizex,sizex);
+        asteroid.position.x = (r + 10*Math.cos(theta))*Math.cos(phi)
+        asteroid.position.y = (r + 10*Math.cos(theta*THREE.Math.randFloatSpread(1000)))*Math.sin(phi)
+        asteroid.position.z = 10*Math.sin(theta*20/i);
+        asteroids.add( asteroid );
+
+      }
+      asteroids.rotation.x += Math.PI /2
+      sun_placer.group.add(asteroids)
+    });
+}
+
 function createScene(canvas) {
   // Create the Three.js renderer and attach it to our canvas
   renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
@@ -197,8 +228,6 @@ function createScene(canvas) {
 
 
   scene.add(camera);
-  // camera.layers.enable( 1 );
-  camera.layers.enable( 2 );
 
   var controls = new THREE.OrbitControls( camera );
   controls.update();
@@ -232,68 +261,23 @@ function createScene(canvas) {
 
   earth.add_multiple_orbital_elements([moon])
 
+  load_asteroids(sun_placer)
   var starField = get_star_field();
+
 
   scene.add(starField);
   scene.add(sun_placer.group);
   // scene.add(earth.group)
-
-  // var customMaterial = new THREE.ShaderMaterial(
-  // {
-  //   uniforms:
-  //   {
-  //     "c":   { type: "f", value: 0.3 },
-  //     "p":   { type: "f", value: 3.2 },
-  //     glowColor: { type: "c", value: new THREE.Color(0xffffff) },
-  //     viewVector: { type: "v3", value: camera.position }
-  //   },
-  //   // vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
-  //   // fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
-  //   side: THREE.BackSide,
-  //   blending: THREE.AdditiveBlending,
-  //   transparent: true
-  // });
-  //
-  // var moonGlow = new THREE.Mesh( SystemElement.geometry.clone(), customMaterial.clone() );
-  // moonGlow.position = earth.element.position;
-	// moonGlow.scale.multiplyScalar(1.2);
-	// scene.add( moonGlow );
-
-
-  // instantiate a loader
-var loader = new THREE.OBJLoader();
-
-// load a resource
-loader.load('images/asteroid.obj',function (object) {
-    asteroids = new THREE.Object3D;
-    texture = new THREE.TextureLoader().load("images/astroid_texture.jpg");
-    material = new THREE.MeshPhongMaterial({ map: texture});
-    geometry = object.children[0].geometry
-    element = new THREE.Mesh(geometry, material);
-    for ( var i = 0; i < 1500; i ++ ) {
-       var asteroid = element.clone()
-       var theta = THREE.Math.randFloatSpread(360);
-       var phi = THREE.Math.randFloatSpread(360);
-
-       var r = 225
-       sizex = Math.abs(THREE.Math.randFloatSpread(.1))
-
-       asteroid.scale.set(sizex,sizex,sizex);
-       asteroid.position.x = (r + 10*Math.cos(theta))*Math.cos(phi)
-       asteroid.position.y = (r + 10*Math.cos(theta*THREE.Math.randFloatSpread(1000)))*Math.sin(phi)
-       asteroid.position.z = 10*Math.sin(theta*20/i);
-       asteroids.add( asteroid );
-
-
-    }
-    asteroids.rotation.x += Math.PI /2
-    sun_placer.group.add(asteroids)
-
-
-	});
-
-
-
-
+  // SUN GLOW
+  var customMaterial = new THREE.ShaderMaterial(
+  {
+    side: THREE.BackSide,
+    fragmentShader:"void main() {gl_FragColor = vec4( 1.0, 1.0, 0.9, 1.0 );}",
+    transparent: true
+  });
+  console.log(customMaterial);
+  var sunGlow = new THREE.Mesh( SystemElement.geometry.clone(), customMaterial.clone() );
+  sunGlow.scale.multiplyScalar(20.5);
+	scene.add( sunGlow );
 
 }
