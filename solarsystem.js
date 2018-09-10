@@ -195,8 +195,10 @@ function load_asteroids(sun_placer) {
         var phi = THREE.Math.randFloatSpread(360);
 
         var r = 225
-        sizex = Math.abs(THREE.Math.randFloatSpread(.1))
-
+        sizex = Math.abs(THREE.Math.randFloatSpread(.07))
+        asteroid.rotation.x += THREE.Math.randFloatSpread(1)
+        asteroid.rotation.y += THREE.Math.randFloatSpread(1)
+        asteroid.rotation.z += THREE.Math.randFloatSpread(1)
         asteroid.scale.set(sizex,sizex,sizex);
         asteroid.position.x = (r + 10*Math.cos(theta))*Math.cos(phi)
         asteroid.position.y = (r + 10*Math.cos(theta*THREE.Math.randFloatSpread(1000)))*Math.sin(phi)
@@ -223,11 +225,11 @@ function createScene(canvas) {
   // scene.background =new THREE.TextureLoader().load('images/background3.png' );
   // Add  a camera so we can view the scene
   camera = new THREE.PerspectiveCamera( 45, canvas.width / canvas.height, 1, 4000 );
-  camera.position.z = 100;
+  camera.position.z = 350;
   // camera.position.x = 200;
 
 
-  scene.add(camera);
+  // scene.add(camera);
 
   var controls = new THREE.OrbitControls( camera );
   controls.update();
@@ -279,5 +281,8 @@ function createScene(canvas) {
   var sunGlow = new THREE.Mesh( SystemElement.geometry.clone(), customMaterial.clone() );
   sunGlow.scale.multiplyScalar(20.5);
 	scene.add( sunGlow );
+
+  pluto.orbital_group.add(camera);
+  // scene.add(camera);
 
 }
