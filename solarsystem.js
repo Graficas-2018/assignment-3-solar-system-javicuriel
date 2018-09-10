@@ -267,10 +267,11 @@ var loader = new THREE.OBJLoader();
 loader.load('images/asteroid.obj',function (object) {
     asteroids = new THREE.Object3D;
     texture = new THREE.TextureLoader().load("images/astroid_texture.jpg");
-    // material = new THREE.MeshPhongMaterial({ map: texture});
-    object.children[0].material = new THREE.MeshPhongMaterial({ map: texture});
+    material = new THREE.MeshPhongMaterial({ map: texture});
+    geometry = object.children[0].geometry
+    element = new THREE.Mesh(geometry, material);
     for ( var i = 0; i < 1500; i ++ ) {
-       var asteroid = object.clone()
+       var asteroid = element.clone()
        var theta = THREE.Math.randFloatSpread(360);
        var phi = THREE.Math.randFloatSpread(360);
 
