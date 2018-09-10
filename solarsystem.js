@@ -53,10 +53,18 @@ class SystemElement{
     this.group.add(element.orbital_group);
 
   }
-  add_multiple_orbital_elements(elements){
-    for (var i = 0; i < elements.length; i++) {
-      this.add_orbital_element(elements[i],(this.scale*3) * (i+1) +elements[i].scale);
+  add_multiple_orbital_elements(elements, moon = null){
+    if(!moon){
+      for (var i = 0; i < elements.length; i++) {
+        this.add_orbital_element(elements[i],(this.scale*3) * (i+1) +elements[i].scale);
+      }
     }
+    else{
+      for (var i = 0; i < elements.length; i++) {
+        this.add_orbital_element(elements[i],this.scale* (i+1) +elements[i].scale);
+      }
+    }
+
   }
 }
 // Set geometry as class variable
@@ -245,14 +253,27 @@ function createScene(canvas) {
 
   add_ambient_light(.2)
 
+
+
   scale_all = 1.5
+  moons = []
+  for (var i = 0; i < 20; i++) {
+    moons.push(new SystemElement(scale_all*.1, 'moon_texture.jpg', 'moon_bump.jpg',true));
+  }
+
   sun_placer = new SystemElement(17);
   mercury = new SystemElement(scale_all*0.9, 'mercurymap.jpg', 'mercurybump.jpg',true);
   venus = new SystemElement(scale_all*1.7, 'venusmap.jpg', 'venusbump.jpg',true);
   earth = new SystemElement(scale_all*1.8, 'earth_atmos_2048.jpg', 'earth_normal_2048.jpg');
   moon = new SystemElement(scale_all*.3, 'moon_texture.jpg', 'moon_bump.jpg',true);
+  earth.add_multiple_orbital_elements([moon])
+
   mars = new SystemElement(scale_all*1.3, 'mars_1k_color.jpg', 'mars_1k_normal.jpg');
+  mars.add_multiple_orbital_elements([moons[0], moons[1]], true)
+
   jupiter = new SystemElement(scale_all*6, 'jupitermap.jpg', null);
+  jupiter.add_multiple_orbital_elements([moons[2], moons[3],moons[4],moons[5],moons[6],moons[7]], true)
+
   saturno = new SystemElement(scale_all*5, 'saturnmap.jpg', null);
   urano = new SystemElement(scale_all*4.7, 'uranusmap.jpg', null);
   neptune = new SystemElement(scale_all*4.5, 'neptunemap.jpg', null);
@@ -261,7 +282,7 @@ function createScene(canvas) {
 
   sun_placer.add_multiple_orbital_elements([mercury,venus,earth,mars,jupiter,saturno,urano,neptune,pluto])
 
-  earth.add_multiple_orbital_elements([moon])
+
 
   load_asteroids(sun_placer)
   var starField = get_star_field();
