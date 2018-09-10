@@ -4,6 +4,7 @@ var images_path = 'images/'
 var system = null;
 var sun_scene_lights = [];
 var sun_intensity = 1;
+var asteroids = null;
 
 
 class SystemElement{
@@ -47,9 +48,20 @@ class SystemElement{
       var path = new THREE.Mesh( path_geometry, this.constructor.path_material );
       path.rotation.x += Math.PI /2
       this.group.add(path)
+      element.group.position.set(radius, 0,0);
+    }
+    else{
+      var theta = THREE.Math.randFloatSpread(360);
+      var phi = THREE.Math.randFloatSpread(360);
+      var x = radius * Math.sin(theta) * Math.cos(phi);
+      var y = radius * Math.sin(theta) * Math.sin(phi);
+      var z = radius * Math.cos(theta);
+      element.group.position.set(x, y, z);
     }
 
-    element.group.position.set(radius, 0,0);
+
+
+
     this.group.add(element.orbital_group);
 
   }
@@ -61,7 +73,7 @@ class SystemElement{
     }
     else{
       for (var i = 0; i < elements.length; i++) {
-        this.add_orbital_element(elements[i],this.scale* (i+1) +elements[i].scale);
+        this.add_orbital_element(elements[i],this.scale*2+elements[i].scale, false);
       }
     }
 
@@ -96,6 +108,20 @@ function animate() {
     for (var i = 0; i < sun_scene_lights.length; i++) {
       sun_scene_lights[i].intensity += sun_intensity*100/duration
     }
+
+    // Because it will fail before asteroid load
+    try {
+      for (var i = 0; i < asteroids.children.length; i++) {
+        asteroids.children[i].rotation.y += angle;
+        asteroids.children[i].rotation.x += angle;
+        asteroids.children[i].rotation.z += angle;
+      }
+    }catch (e) {
+
+    } finally {
+
+    }
+
 
     // Last element
     if(sun_scene_lights[3].intensity > 8 || sun_scene_lights[3].intensity < 5){
@@ -216,7 +242,16 @@ function load_asteroids(sun_placer) {
       }
       asteroids.rotation.x += Math.PI /2
       sun_placer.group.add(asteroids)
+      console.log(asteroids);
     });
+}
+
+function add_moons(element, n) {
+  moons = []
+  for (var i = 0; i < 20; i++) {
+    moons.push(new SystemElement(scale_all*.1, 'moon_texture.jpg', 'moon_bump.jpg',true));
+  }
+  element.add_multiple_orbital_elements(moons, true)
 }
 
 function createScene(canvas) {
@@ -269,13 +304,20 @@ function createScene(canvas) {
   earth.add_multiple_orbital_elements([moon])
 
   mars = new SystemElement(scale_all*1.3, 'mars_1k_color.jpg', 'mars_1k_normal.jpg');
-  mars.add_multiple_orbital_elements([moons[0], moons[1]], true)
+
+  add_moons(mars, 2)
 
   jupiter = new SystemElement(scale_all*6, 'jupitermap.jpg', null);
-  jupiter.add_multiple_orbital_elements([moons[2], moons[3],moons[4],moons[5],moons[6],moons[7]], true)
+
+  add_moons(jupiter, 10)
 
   saturno = new SystemElement(scale_all*5, 'saturnmap.jpg', null);
+
+  add_moons(saturno, 5)
+
   urano = new SystemElement(scale_all*4.7, 'uranusmap.jpg', null);
+
+  add_moons(urano, 10)
   neptune = new SystemElement(scale_all*4.5, 'neptunemap.jpg', null);
   pluto = new SystemElement(scale_all*0.8, 'plutomap1k.jpg', 'plutobump1k.jpg');
 
