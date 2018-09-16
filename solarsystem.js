@@ -217,9 +217,9 @@ function load_asteroids(sun_placer) {
   var loader = new THREE.OBJLoader();
 
   // load a resource
-  loader.load('images/asteroid.obj',function (object) {
+  loader.load('images/phobos/phobos.obj',function (object) {
       asteroids = new THREE.Object3D;
-      texture = new THREE.TextureLoader().load("images/astroid_texture.jpg");
+      texture = new THREE.TextureLoader().load("images/phobos/phobosbump.jpg");
       material = new THREE.MeshPhongMaterial({ map: texture});
       geometry = object.children[0].geometry
       element = new THREE.Mesh(geometry, material);
